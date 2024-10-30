@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Container, Content, ClosedSideBar, OpenSideBar } from "./styles";
+import { ClosedSideBar, OpenSideBar } from "./styles";
 import { TbInvoice } from "react-icons/tb";
 
 export function SideBar() {
@@ -9,8 +9,7 @@ export function SideBar() {
     setSideBar((prevState) => !prevState);
   }
   return (
-    <Container>
-      <Content>
+    <>
         {!sideBar ? (
           <ClosedSideBar>
             <nav>
@@ -43,7 +42,6 @@ export function SideBar() {
             <aside onClick={handleChangeSideBar} />
           </OpenSideBar>
         )}
-      </Content>
-    </Container>
+    </>
   );
 }

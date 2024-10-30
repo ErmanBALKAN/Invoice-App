@@ -8,7 +8,7 @@ export const GlobalStyle = createGlobalStyle`
     list-style: none;
     text-decoration: none;
     
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Nunito', 'Roboto', sans-serif;
 
     color: var(--primary-font-color);
   }
@@ -34,7 +34,7 @@ export const GlobalStyle = createGlobalStyle`
 
   body, html, #root {
     width: 100%;
-    height: 100%;
+    height: 100vh;
     position: relative;
 
     background: #f3f3f3;
