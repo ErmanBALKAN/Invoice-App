@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ClosedSideBar, OpenSideBar } from "./styles";
+import { ClosedSideBar, OpenSideBar } from "./sidebar.styles";
 import { TbInvoice } from "react-icons/tb";
 
 export function SideBar() {
