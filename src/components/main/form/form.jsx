@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import moment from "moment";
 import "react-datepicker/dist/react-datepicker.css";
@@ -6,14 +6,11 @@ import {
   ContainerForm,
   FormWrapper,
   FormGroup,
-  Label,
-  H5,
+  Text,
   DateContainer,
   DatePickerWrapper,
   DateDisplay,
   DateIconButton,
-  DateLabel,
-  DateText,
   DueDateOptions,
   DueDateOption,
   ItemSection,
@@ -32,25 +29,35 @@ import {
   VatOption,
   CustomVatInput,
   AddButton,
-  ErrorText,
   ItemError,
+  ToggleSection,
+  ItemsContainer,
+  ItemSummary,
+  ItemSummaryContent,
+  ItemSummaryHeader,
+  ItemInitial,
+  ItemDetails,
+  ItemPricing,
+  AddMoreButton,
 } from "./form.styles";
 import { useForm, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useDateHandling } from "./hooks/useDateHandling";
-import { CURRENCIES, VAT_OPTIONS, DUE_DATE_OPTIONS } from '../../../data/formConstants';
-import { useInvoice } from '../../../context/InvoiceContext';
+import { CURRENCIES, VAT_OPTIONS, DUE_DATE_OPTIONS } from "../../../data/formConstants";
+import { useInvoice } from "../../../context/InvoiceContext";
 import { CiCalendarDate } from "react-icons/ci";
 import { LuArchive } from "react-icons/lu";
+import { IoIosAddCircleOutline } from "react-icons/io";
 import schema from "./validationSchema";
 
 const Form = () => {
-  const { register, control, handleSubmit, watch, setValue,formState: { errors },
-  } = useForm({
-    resolver: yupResolver(schema),
+  const [isItemsVisible, setIsItemsVisible] = useState(true);
+  const [showItemInputs, setShowItemInputs] = useState(false);
+  const [isCustomVat, setIsCustomVat] = useState(false);
+  const { register, control, handleSubmit, watch, setValue, formState: { errors },} = useForm({ resolver: yupResolver(schema),
     defaultValues: {
-      issueDate: moment().startOf('day').toDate(),
-      dueDate: moment().startOf('day').add(15, "days").toDate(),
+      issueDate: moment().startOf("day").toDate(),
+      dueDate: moment().startOf("day").add(15, "days").toDate(),
       items: [
         {
           amount: undefined,
@@ -63,7 +70,7 @@ const Form = () => {
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append } = useFieldArray({
     control,
     name: "items",
   });
@@ -95,7 +102,7 @@ const Form = () => {
     });
 
     return () => subscription.unsubscribe();
-  }, [watch, setInvoiceData, issueDate]); 
+  }, [watch, setInvoiceData, issueDate]);
 
   const onSubmit = (data) => {
     console.log(data);
@@ -109,19 +116,29 @@ const Form = () => {
       title: "",
       vatRate: "",
     });
+    setShowItemInputs(false);
+  };
+
+  const handleShowInputs = () => {
+    setShowItemInputs(true);
+  };
+
+  const handleToggleClick = () => {
+    setIsItemsVisible(false);
+    setShowItemInputs(true);
   };
 
   return (
     <ContainerForm>
       <FormWrapper onSubmit={handleSubmit(onSubmit)}>
         <h1>New invoice #INV-71</h1>
-        <H5>
+        <Text variant="h5">
           Tailor invoices for your customers, add items, and manage your acconts
           receivable efforlessly.
-        </H5>
+        </Text>
 
         <FormGroup>
-          <DateLabel>Issue date</DateLabel>
+          <Text variant="label">Issue date</Text>
           <DateContainer>
             <DatePickerWrapper>
               <p>Issue date</p>
@@ -131,7 +148,9 @@ const Form = () => {
               <DateIconButton type="button" onClick={handleIconClick}>
                 <DatePicker
                   selected={issueDate}
-                  onChange={(date) => setIssueDate(moment(date).startOf('day').toDate())}
+                  onChange={(date) =>
+                    setIssueDate(moment(date).startOf("day").toDate())
+                  }
                   dateFormat="dd.MM.yyyy"
                   open={isOpen}
                   onClickOutside={() => setIsOpen(false)}
@@ -141,12 +160,12 @@ const Form = () => {
                 <CiCalendarDate size={32} />
               </DateIconButton>
             </DatePickerWrapper>
-            <DateText>{getDateDisplay(issueDate)}</DateText>
+            <Text variant="date">{getDateDisplay(issueDate)}</Text>
           </DateContainer>
         </FormGroup>
 
         <FormGroup>
-          <Label>Due date</Label>
+          <Text variant="label">Due date</Text>
           <DateContainer>
             <DueDateOptions>
               {DUE_DATE_OPTIONS.map((option) => (
@@ -160,7 +179,11 @@ const Form = () => {
                     <DatePickerWrapper>
                       <DatePicker
                         selected={dueDate}
-                        onChange={(date) => handleCustomDateChange(moment(date).startOf('day').toDate())}
+                        onChange={(date) =>
+                          handleCustomDateChange(
+                            moment(date).startOf("day").toDate()
+                          )
+                        }
                         dateFormat="dd.MM.yyyy"
                         open={isDueDatePickerOpen}
                         onClickOutside={() => setIsDueDatePickerOpen(false)}
@@ -175,17 +198,58 @@ const Form = () => {
         </FormGroup>
 
         <FormGroup>
-          <Label>Items</Label>
-          <ItemSection>
-            {fields.map((field, index) => (
-              <ItemInputGroup key={field.id}>
+        <ItemsContainer>  
+          <Text variant="label">Items</Text>
+          {fields.length > 0 && fields.slice(0, -1).map((item) => (
+            <ItemSummary key={item.id}>
+              <ItemSummaryContent>
+                <ItemSummaryHeader>
+                  <span style={{display: "flex", alignItems: "center"}}>
+                    <ItemInitial>{item.title.slice(0,1)}</ItemInitial>
+                    <ItemDetails>
+                      <Text variant="bold">{item.title}</Text>
+                      <Text variant="vat">{item.vatRate}% <span>&#8226; {item.vatRate === "0" ? "VAT Exempt" : item.vatRate === "10" ? "Reduced VAT" : item.vatRate === "20" ? "Standard VAT" : "Custom VAT"}</span> </Text>
+                    </ItemDetails>
+                  </span>
+                  <ItemPricing>
+                    <Text variant="bold">
+                      {CURRENCIES.find(c => c.code === item.currency)?.symbol}
+                      {(item.amount * item.quantity * (1 + item.vatRate / 100)).toFixed(2)}
+                    </Text>
+                    <Text variant="light">
+                      {item.quantity} x {CURRENCIES.find(c => c.code === item.currency)?.symbol}{item.amount}
+                    </Text>
+                  </ItemPricing>
+                </ItemSummaryHeader>
+                <AddMoreButton onClick={handleShowInputs}>
+                  <IoIosAddCircleOutline size={28} />
+                  Add more items
+                </AddMoreButton>
+              </ItemSummaryContent>
+            </ItemSummary>
+          ))}
+          
+          {isItemsVisible && (
+            <ToggleSection
+              onClick={handleToggleClick}
+              isOpen={isItemsVisible}
+            >
+              <div>
+                <Text variant="bold">Items</Text>
+                <Text variant="light">Select or add items</Text>
+              </div>
+              <LuArchive size={24} />
+            </ToggleSection>
+          )}
+
+          {showItemInputs && (
+            <ItemSection>
+              <ItemInputGroup key={fields[fields.length - 1].id}>
                 <ItemHeader>
-                  <h3>Item {index + 1}</h3>
-                  {index > 0 && (
-                    <button type="button" onClick={() => remove(index)}>
-                      <LuArchive size={24} />
-                    </button>
-                  )}
+                  <h3>Item {fields.length}</h3>
+                  <button onClick={() => setIsItemsVisible(!isItemsVisible)}>
+                    <LuArchive size={24} />
+                  </button>
                 </ItemHeader>
 
                 <CombinedInputWrapper>
@@ -193,12 +257,12 @@ const Form = () => {
                     <CurrencySymbol>
                       {
                         CURRENCIES.find(
-                          (c) => c.code === watch(`items.${index}.currency`)
+                          (c) => c.code === watch(`items.${fields.length - 1}.currency`)
                         )?.symbol
                       }
                     </CurrencySymbol>
                     <AmountInput
-                      {...register(`items.${index}.amount`)}
+                      {...register(`items.${fields.length - 1}.amount`)}
                       placeholder="0"
                       type="number"
                       min="0"
@@ -209,12 +273,12 @@ const Form = () => {
                     <FlagImage
                       src={
                         CURRENCIES.find(
-                          (c) => c.code === watch(`items.${index}.currency`)
+                          (c) => c.code === watch(`items.${fields.length - 1}.currency`)
                         )?.src
                       }
-                      alt={`${watch(`items.${index}.currency`)} flag`}
+                      alt={`${watch(`items.${fields.length - 1}.currency`)} flag`}
                     />
-                    <StyledSelect {...register(`items.${index}.currency`)}>
+                    <StyledSelect {...register(`items.${fields.length - 1}.currency`)}>
                       {CURRENCIES.map((currency) => (
                         <option key={currency.code} value={currency.code}>
                           {currency.code}
@@ -223,12 +287,14 @@ const Form = () => {
                     </StyledSelect>
                   </CurrencySelectWrapper>
                 </CombinedInputWrapper>
-                {errors.items?.[index]?.amount && (
-                  <ErrorText>{errors.items[index].amount.message}</ErrorText>
+                {errors.items?.[fields.length - 1]?.amount && (
+                  <Text variant="error">
+                    {errors.items[fields.length - 1].amount.message}
+                  </Text>
                 )}
                 <ItemRow>
                   <ItemInput
-                    {...register(`items.${index}.quantity`)}
+                    {...register(`items.${fields.length - 1}.quantity`)}
                     placeholder="Quantity"
                     type="number"
                     min="0"
@@ -236,64 +302,70 @@ const Form = () => {
                   />
 
                   <ItemInput
-                    {...register(`items.${index}.title`)}
+                    {...register(`items.${fields.length - 1}.title`)}
                     placeholder="Title"
                     flex={4}
                   />
                 </ItemRow>
                 <ItemError>
-                  {errors.items?.[index]?.quantity && (
-                    <ErrorText>{errors.items[index].quantity.message}</ErrorText>
-                )}
-                {errors.items?.[index]?.title && (
-                  <ErrorText>{errors.items[index].title.message}</ErrorText>
-                )}
+                  {errors.items?.[fields.length - 1]?.quantity && (
+                    <Text variant="error">
+                      {errors.items[fields.length - 1].quantity.message}
+                    </Text>
+                  )}
+                  {errors.items?.[fields.length - 1]?.title && (
+                    <Text variant="error">
+                      {errors.items[fields.length - 1].title.message}
+                    </Text>
+                  )}
                 </ItemError>
                 <ItemHeader>
                   <h3>VAT rate</h3>
                 </ItemHeader>
                 <VatOptions>
-                  {VAT_OPTIONS.map((rate) => (
-                    <VatOption
-                      key={rate.value}
-                      selected={watch(`items.${index}.vatRate`) === rate.value}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setValue(`items.${index}.vatRate`, rate.value);
-                      }}
-                    >
-                      {rate.value === "custom" ? (
-                        <>
-                          {rate.label}
-                          {watch(`items.${index}.vatRate`) === "custom" && (
-                            <CustomVatInput
-                              {...register(`items.${index}.customVatRate`)}
-                              type="number"
-                              min="0"
-                              max="100"
-                              placeholder="%"
-                            />
-                          )}
+                {VAT_OPTIONS.map((rate) => (
+                  <VatOption
+                    key={rate.value}
+                    selected={watch(`items.${fields.length - 1}.vatRate`) === rate.value}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setValue(`items.${fields.length - 1}.vatRate`, rate.value);
+                      setIsCustomVat(rate.value === "custom");
+                    }}
+                  >
+                    {rate.value === "custom" ? (
+                      <>
+                        {rate.label}
+                        {isCustomVat && (
+                          <CustomVatInput
+                            {...register(`items.${fields.length - 1}.vatRate`)}
+                            type="number"
+                            min="0"
+                            max="100"
+                            placeholder="%"
+                            onChange={(e) => setValue(`items.${fields.length - 1}.vatRate`, e.target.value)}
+                          />
+                        )}
                         </>
-                      ) : (
+                        ) : (
                         rate.label
                       )}
                     </VatOption>
                   ))}
+                
                 </VatOptions>
-                {errors.items?.[index]?.vatRate && (
-                  <ErrorText>{errors.items[index].vatRate.message}</ErrorText>
+                {errors.items?.[fields.length - 1]?.vatRate && (
+                  <Text variant="error">
+                    {errors.items[fields.length - 1].vatRate.message}
+                  </Text>
                 )}
               </ItemInputGroup>
-            ))}
-
-            <AddButton
-              type="button"
-              onClick={handleAddItem}
-            >
-              Add Item
-            </AddButton>
-          </ItemSection>
+              <AddButton type="button" onClick={handleAddItem}>
+                Add Item
+              </AddButton>
+            </ItemSection>
+          )}
+        </ItemsContainer>
         </FormGroup>
         <AddButton type="submit">Continue</AddButton>
       </FormWrapper>

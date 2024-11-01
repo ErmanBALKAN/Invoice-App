@@ -236,3 +236,8 @@ export const ContactInfo = styled.p`
   font-size: 13px;
   margin-bottom: 4px;
 `;
+
+export const DueAmount = styled(CompanyName)`
+  font-size: 1.2rem;
+  font-weight: 800;
+`;

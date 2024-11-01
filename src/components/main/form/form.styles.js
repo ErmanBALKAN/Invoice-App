@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { keyframes } from 'styled-components';
 
 export const ContainerForm = styled.div`
   width: 100%;
@@ -36,18 +36,64 @@ export const FormGroup = styled.div`
   margin-bottom: 1rem;
 `;
 
-export const Label = styled.label`
-  display: block;
-  margin: 0.7rem 0;
-  font-weight: 600;
+export const Text = styled.p`
+  ${({ variant }) => {
+    switch (variant) {
+      case 'bold':
+        return `
+          font-weight: 600;
+          font-size: 16px;
+        `;
+      case 'light':
+        return `
+          color: #666;
+          font-size: 14px;
+        `;
+      case 'h5':
+        return `
+          color: #6B7280;
+          font-size: 16px;
+          font-weight: 400;
+          margin: 16px 0;
+        `;
+      case 'label':
+        return `
+          font-size: 14px;
+          font-weight: 500;
+          margin-bottom: 8px;
+          color: #374151;
+        `;
+      case 'date':
+        return `
+          color: #4E92CE;
+          font-size: 14px;
+          font-weight: 600;
+          margin-top: -5px;
+        `;
+      case 'error':
+        return `
+          color: #EF4444;
+          font-size: 12px;
+          margin-top: 4px;
+        `;
+      case 'vat':
+        return `
+          font-size: 13px;
+          margin-top: 4px;
+          span {
+            font-size: 13px;
+            color: #6B7280;
+          }
+        `;
+      default:
+        return `
+          font-size: 14px;
+          color: #374151;
+        `;
+    }
+  }}
 `;
 
-export const H5 = styled.h5`
-  font-size: 14px;
-  font-weight: 600;
-  color: #707b7c;
-  margin: 10px 0 10px 0;
-`;
 
 export const DateContainer = styled.div`
   background-color: #fefefe;
@@ -110,17 +156,6 @@ export const DateIconButton = styled.button`
   }
 `;
 
-export const DateLabel = styled.div`
-  font-weight: 700;
-  margin-bottom: 5px;
-`;
-
-export const DateText = styled.div`
-  color: #0a68b9;
-  font-size: 14px;
-  margin-top: -15px;
-`;
-
 export const DueDateOptions = styled.div`
   display: flex;
   gap: 10px;
@@ -133,13 +168,27 @@ export const DueDateOption = styled.button`
   padding: 8px 8px;
   border-radius: 20px;
   border: none;
-  background-color: ${(props) => (props.selected ? "#4E92CE" : "#DDEAF9")};
-  color: ${(props) => (props.selected ? "#fff" : "#0A68B9")};
+  background-color: ${({selected}) => (selected ? "#4E92CE" : "#DDEAF9")};
+  color: ${({selected}) => (selected ? "#fff" : "#0A68B9")};
   cursor: pointer;
   font-size: 14px;
+  font-weight: 700;
 
   &:hover {
-    background-color: ${(props) => (props.selected ? "#4E92CE" : "#8FBAE1")};
+    background-color: ${({selected}) => (selected ? "#4E92CE" : "#8FBAE1")};
+  }
+`;
+
+export const slideDown = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 2000px;
   }
 `;
 
@@ -147,6 +196,7 @@ export const ItemSection = styled.div`
   background-color: #fefefe;
   padding: 16px 18px;
   border-radius: 20px;
+  animation: ${slideDown} 0.8s ease forwards;
 `;
 
 export const ItemHeader = styled.div`
@@ -162,6 +212,12 @@ export const ItemHeader = styled.div`
     &:last-child {
       font-size: 16px;
     }
+  }
+
+  svg {
+    background-color: #F4F5F8 ;
+    padding: 10px;
+    border-radius: 50%;
   }
 `;
 
@@ -188,7 +244,7 @@ export const AmountInputContainer = styled.div`
 export const CurrencySymbol = styled.span`
   position: absolute;
   left: 14px;
-  top: 15px;
+  top: 16.5px;
   color: #000;
   font-weight: 700;
   font-size: 30px;
@@ -321,8 +377,39 @@ export const VatOption = styled(DueDateOption)`
 `;
 
 export const CustomVatInput = styled(ItemInput)`
-  width: 80px;
+  width: 30px;
   margin-left: 10px;
+  height: 6px;
+  padding: 6px 4px;
+  background-color: #DDEAF9;
+  font-size: 14px;
+  color: #4E92CE;
+  font-weight: 700;
+`;
+
+export const ToggleSection = styled.div`
+  background-color: #FEFEFE;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  transition: opacity 0.3s ease;
+  
+  &:hover {
+    background-color: #F8F8F8;
+  }
+  
+  svg {
+    background-color: #F4F5F8 ;
+    padding: 10px;
+    border-radius: 50%;
+  }
+`;
+
+export const ItemsContainer = styled.div`
+  position: relative;
 `;
 
 export const AddButton = styled.button`
@@ -337,9 +424,67 @@ export const AddButton = styled.button`
   margin-top: 15px;
 `;
 
-export const ErrorText = styled.span`
-  color: #ff4d4f;
-  font-size: 12px;
-  margin-top: 4px;
-  display: block;
+export const ItemSummary = styled.div`
+  padding: 1rem;
+  background-color: #FEFEFE;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+`;
+
+export const ItemSummaryContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+`;
+
+export const ItemSummaryHeader = styled.span`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+export const ItemInitial = styled.div`
+  margin-right: 10px;
+  background-color: #F0F0F0;
+  padding: 10px;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const ItemDetails = styled.span`
+  display: flex;
+  flex-direction: column;
+`;
+
+export const ItemPricing = styled.span`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+`;
+
+export const AddMoreButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 15px;
+  color: #0A68B9;
+  font-size: 16px;
+  font-weight: bold;
+  text-decoration: underline;
+  background: none;
+  border: none;
+  cursor: pointer;
+  
+  &:hover {
+    opacity: 0.8;
+  }
+  svg {
+    path {
+      color: #0A68B9;
+    }
+  }
 `;

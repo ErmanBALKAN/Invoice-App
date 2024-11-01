@@ -22,13 +22,14 @@ import {
   CompanyName,
   TaxId,
   ContactInfo,
+  DueAmount,
 } from "./preview.styles";
 import moment from 'moment';
+import { CURRENCIES } from "../../../data/formConstants";
 
 const Preview = () => {
   const { invoiceData } = useInvoice();
   const { issueDate, dueDate, items } = invoiceData;
-
   const {
     name: issuerName,
     address: issuerAddress,
@@ -45,6 +46,21 @@ const Preview = () => {
     taxNumber: recipientTaxNumber,
     paymentDetails,
   } = invoiceRecipient;
+
+  const currencySymbol = items.length > 0 
+    ? CURRENCIES.find(c => c.code === items[0].currency)?.symbol || '€'
+    : '€';
+
+  const calculations = items.reduce((acc, item) => {
+    const subtotal = item.quantity * item.amount;
+    const vatAmount = subtotal * (item.vatRate / 100);
+    
+    return {
+      totalExclVat: acc.totalExclVat + subtotal,
+      totalVatAmount: acc.totalVatAmount + vatAmount,
+      totalInclVat: acc.totalInclVat + (subtotal + vatAmount)
+    };
+  }, { totalExclVat: 0, totalVatAmount: 0, totalInclVat: 0 });
 
   return (
     <ContainerPreview>
@@ -98,32 +114,36 @@ const Preview = () => {
           </tr>
         </thead>
         <tbody>
-          {items.map((item, index) => (
-            <tr key={index}>
-              <TableDescription>{item.title}</TableDescription>
-              <td>{item.quantity}</td>
-              <td>€{item.amount}</td>
-              <td>{item.vatRate}%</td>
-              <td>€{((item.quantity * item.amount) * (1 + item.vatRate / 100)).toFixed(2)}</td>
-            </tr>
-          ))}
+          {items.map((item, index) => {
+            return (
+              <tr key={index}>
+                <TableDescription>{item.title}</TableDescription>
+                <td>{item.quantity}</td>
+                <td>{currencySymbol}{item.amount}</td>
+                <td>{item.vatRate}%</td>
+                <td>{currencySymbol}{((item.quantity * item.amount) * (1 + item.vatRate / 100)).toFixed(2)}</td>
+              </tr>
+            );
+          })}
         </tbody>
       </Table>
 
       <TotalSection>
         <TotalItem>
-          Total excl. VAT<span>€100.00</span>
+          Total excl. VAT<span>{currencySymbol}{calculations.totalExclVat.toFixed(2)}</span>
         </TotalItem>
 
         <TotalItem>
-          Total VAT Amount<span>€20.00</span>
+          Total VAT Amount<span>{currencySymbol}{calculations.totalVatAmount.toFixed(2)}</span>
         </TotalItem>
 
         <TotalItem>
-          Total incl. VAT<strong> €120.00</strong>
+          Total incl. VAT<strong>{currencySymbol}{calculations.totalInclVat.toFixed(2)}</strong>
         </TotalItem>
       </TotalSection>
-
+      <DueAmount>
+        {currencySymbol}{calculations.totalInclVat.toFixed(2)} due {moment(dueDate).format('DD MMMM, YYYY')}
+      </DueAmount>
       <PaymentSection>
         <div>
           <h3>Payment Details</h3>

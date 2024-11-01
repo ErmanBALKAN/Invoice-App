@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { GlobalStyle } from "../styles/global";
 import { SideBar } from "../components/sidebar/sidebar";
 import Header from "../components/header/header";
@@ -13,6 +13,7 @@ const AppRouter = () => {
       <SideBar />
       <Routes>
         <Route path="/" element={<MainContainer />} />
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>
   );
