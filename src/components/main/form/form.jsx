@@ -49,12 +49,13 @@ import { CiCalendarDate } from "react-icons/ci";
 import { LuArchive } from "react-icons/lu";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import schema from "./validationSchema";
+import Swal from "sweetalert2";
 
 const Form = () => {
   const [isItemsVisible, setIsItemsVisible] = useState(true);
   const [showItemInputs, setShowItemInputs] = useState(false);
   const [isCustomVat, setIsCustomVat] = useState(false);
-  const { register, control, handleSubmit, watch, setValue, formState: { errors },} = useForm({ resolver: yupResolver(schema),
+  const { register, control, handleSubmit, watch, setValue, formState: { errors }, reset, trigger } = useForm({ resolver: yupResolver(schema),
     defaultValues: {
       issueDate: moment().startOf("day").toDate(),
       dueDate: moment().startOf("day").add(15, "days").toDate(),
@@ -64,7 +65,7 @@ const Form = () => {
           currency: "EUR",
           quantity: undefined,
           title: "",
-          vatRate: 0,
+          vatRate: "",
         },
       ],
     },
@@ -106,17 +107,28 @@ const Form = () => {
 
   const onSubmit = (data) => {
     console.log(data);
+    Swal.fire({
+      title: 'Invoice Created!',
+      text: `Your invoice has been created.`,
+      icon: 'success',
+      confirmButtonText: 'OK'
+    }).then(() => {
+      reset();
+    });
   };
 
-  const handleAddItem = () => {
-    append({
-      amount: "",
-      currency: "EUR",
-      quantity: "",
-      title: "",
-      vatRate: "",
-    });
-    setShowItemInputs(false);
+  const handleAddItem = async () => {
+    const isValid = await trigger(`items.${fields.length - 1}`);
+    if (isValid) {
+      append({
+        amount: "",
+        currency: "EUR",
+        quantity: "",
+        title: "",
+        vatRate: "",
+      });
+      setShowItemInputs(false);
+    }
   };
 
   const handleShowInputs = () => {
@@ -132,20 +144,20 @@ const Form = () => {
     <ContainerForm>
       <FormWrapper onSubmit={handleSubmit(onSubmit)}>
         <h1>New invoice #INV-71</h1>
-        <Text variant="h5">
+        <Text $variant="h5">
           Tailor invoices for your customers, add items, and manage your acconts
           receivable efforlessly.
         </Text>
 
         <FormGroup>
-          <Text variant="label">Issue date</Text>
+          <Text $variant="label">Issue date</Text>
           <DateContainer>
             <DatePickerWrapper>
               <p>Issue date</p>
               <DateDisplay>
                 {moment(issueDate).format("DD.MM.YYYY")}
               </DateDisplay>
-              <DateIconButton type="button" onClick={handleIconClick}>
+              <DateIconButton onClick={handleIconClick}>
                 <DatePicker
                   selected={issueDate}
                   onChange={(date) =>
@@ -160,12 +172,12 @@ const Form = () => {
                 <CiCalendarDate size={32} />
               </DateIconButton>
             </DatePickerWrapper>
-            <Text variant="date">{getDateDisplay(issueDate)}</Text>
+            <Text $variant="date">{getDateDisplay(issueDate)}</Text>
           </DateContainer>
         </FormGroup>
 
         <FormGroup>
-          <Text variant="label">Due date</Text>
+          <Text $variant="label">Due date</Text>
           <DateContainer>
             <DueDateOptions>
               {DUE_DATE_OPTIONS.map((option) => (
@@ -199,7 +211,7 @@ const Form = () => {
 
         <FormGroup>
         <ItemsContainer>  
-          <Text variant="label">Items</Text>
+          <Text $variant="label">Items</Text>
           {fields.length > 0 && fields.slice(0, -1).map((item) => (
             <ItemSummary key={item.id}>
               <ItemSummaryContent>
@@ -207,16 +219,16 @@ const Form = () => {
                   <span style={{display: "flex", alignItems: "center"}}>
                     <ItemInitial>{item.title.slice(0,1)}</ItemInitial>
                     <ItemDetails>
-                      <Text variant="bold">{item.title}</Text>
-                      <Text variant="vat">{item.vatRate}% <span>&#8226; {item.vatRate === "0" ? "VAT Exempt" : item.vatRate === "10" ? "Reduced VAT" : item.vatRate === "20" ? "Standard VAT" : "Custom VAT"}</span> </Text>
+                      <Text $variant="bold">{item.title}</Text>
+                      <Text $variant="vat">{item.vatRate}% <span>&#8226; {item.vatRate === "0" ? "VAT Exempt" : item.vatRate === "10" ? "Reduced VAT" : item.vatRate === "20" ? "Standard VAT" : "Custom VAT"}</span> </Text>
                     </ItemDetails>
                   </span>
                   <ItemPricing>
-                    <Text variant="bold">
+                    <Text $variant="bold">
                       {CURRENCIES.find(c => c.code === item.currency)?.symbol}
                       {(item.amount * item.quantity * (1 + item.vatRate / 100)).toFixed(2)}
                     </Text>
-                    <Text variant="light">
+                    <Text $variant="light">
                       {item.quantity} x {CURRENCIES.find(c => c.code === item.currency)?.symbol}{item.amount}
                     </Text>
                   </ItemPricing>
@@ -235,8 +247,8 @@ const Form = () => {
               isOpen={isItemsVisible}
             >
               <div>
-                <Text variant="bold">Items</Text>
-                <Text variant="light">Select or add items</Text>
+                <Text $variant="bold">Items</Text>
+                <Text $variant="light">Select or add items</Text>
               </div>
               <LuArchive size={24} />
             </ToggleSection>
@@ -246,7 +258,7 @@ const Form = () => {
             <ItemSection>
               <ItemInputGroup key={fields[fields.length - 1].id}>
                 <ItemHeader>
-                  <h3>Item {fields.length}</h3>
+                  <h3>Item</h3>
                   <button onClick={() => setIsItemsVisible(!isItemsVisible)}>
                     <LuArchive size={24} />
                   </button>
@@ -288,7 +300,7 @@ const Form = () => {
                   </CurrencySelectWrapper>
                 </CombinedInputWrapper>
                 {errors.items?.[fields.length - 1]?.amount && (
-                  <Text variant="error">
+                  <Text $variant="error">
                     {errors.items[fields.length - 1].amount.message}
                   </Text>
                 )}
@@ -309,12 +321,12 @@ const Form = () => {
                 </ItemRow>
                 <ItemError>
                   {errors.items?.[fields.length - 1]?.quantity && (
-                    <Text variant="error">
+                    <Text $variant="error">
                       {errors.items[fields.length - 1].quantity.message}
                     </Text>
                   )}
                   {errors.items?.[fields.length - 1]?.title && (
-                    <Text variant="error">
+                    <Text $variant="error">
                       {errors.items[fields.length - 1].title.message}
                     </Text>
                   )}
@@ -343,7 +355,10 @@ const Form = () => {
                             min="0"
                             max="100"
                             placeholder="%"
-                            onChange={(e) => setValue(`items.${fields.length - 1}.vatRate`, e.target.value)}
+                            onChange={(e) => {
+                              const value = Math.min(100, e.target.value); 
+                              setValue(`items.${fields.length - 1}.vatRate`, value);
+                            }}
                           />
                         )}
                         </>
@@ -355,7 +370,7 @@ const Form = () => {
                 
                 </VatOptions>
                 {errors.items?.[fields.length - 1]?.vatRate && (
-                  <Text variant="error">
+                  <Text $variant="error">
                     {errors.items[fields.length - 1].vatRate.message}
                   </Text>
                 )}

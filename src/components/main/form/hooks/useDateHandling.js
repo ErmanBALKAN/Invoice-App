@@ -1,12 +1,45 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import moment from "moment";
+import { useInvoice } from "../../../../context/InvoiceContext";
 
 export const useDateHandling = () => {
+  const { setInvoiceData } = useInvoice();
   const [issueDate, setIssueDate] = useState(moment().startOf('day').toDate());
   const [isOpen, setIsOpen] = useState(false);
   const [dueDate, setDueDate] = useState(moment().startOf('day').add(15, "days").toDate());
   const [dueDateOption, setDueDateOption] = useState("15days");
   const [isDueDatePickerOpen, setIsDueDatePickerOpen] = useState(false);
+
+  useEffect(() => {
+    setInvoiceData(prevData => ({
+      ...prevData,
+      issueDate: issueDate,
+      dueDate: dueDate
+    }));
+  }, [issueDate, dueDate, setInvoiceData]);
+
+  useEffect(() => {
+    let days = 0;
+    switch (dueDateOption) {
+      case "receipt":
+        days = 0;
+        break;
+      case "15days":
+        days = 15;
+        break;
+      case "30days":
+        days = 30;
+        break;
+      default:
+        days = 15;
+    }
+
+    setDueDate(
+      days === 0 
+        ? moment(issueDate).startOf('day').toDate()
+        : moment(issueDate).startOf('day').add(days, "days").toDate()
+    );
+  }, [issueDate, dueDateOption]);
 
   const getDateDisplay = (date) => {
     const today = moment().startOf('day');

@@ -37,8 +37,8 @@ export const FormGroup = styled.div`
 `;
 
 export const Text = styled.p`
-  ${({ variant }) => {
-    switch (variant) {
+  ${({ $variant }) => {
+    switch ($variant) {
       case 'bold':
         return `
           font-weight: 600;
@@ -117,7 +117,7 @@ export const DatePickerWrapper = styled.div`
 
   .react-datepicker-wrapper {
     position: absolute;
-    left: 23px !important;
+    left: 50% !important;
     input {
       visibility: hidden;
       width: 0;
@@ -134,7 +134,7 @@ export const DateDisplay = styled.div`
   background-color: red;
 `;
 
-export const DateIconButton = styled.button`
+export const DateIconButton = styled.div`
   background: #f4f5f8;
   border-radius: 50%;
   position: relative;
