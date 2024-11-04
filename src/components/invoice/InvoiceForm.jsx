@@ -310,6 +310,9 @@ const Form = () => {
                       {...register(`items.${fields.length - 1}.amount`, {
                         onChange: (e) => {
                           e.target.value = e.target.value.replace(/[eE+-]/gi, '');
+                          if (e.target.value.length > 10) {
+                            e.target.value = e.target.value.slice(0, 10);
+                          }
                           clearErrors(`items.${fields.length - 1}.amount`);
                         }
                       })}
@@ -317,6 +320,7 @@ const Form = () => {
                       type="number"
                       min="0"
                       step="0.01"
+                      maxLength="10"
                       onKeyDown={(e) => {
                         if (['e', 'E', '+', '-'].includes(e.key)) {
                           e.preventDefault();
@@ -353,6 +357,9 @@ const Form = () => {
                     {...register(`items.${fields.length - 1}.quantity`, {
                       onChange: (e) => {
                         e.target.value = e.target.value.replace(/[eE+-]/gi, '');
+                        if (e.target.value.length > 4) {
+                          e.target.value = e.target.value.slice(0, 4);
+                        }
                         clearErrors(`items.${fields.length - 1}.quantity`);
                       }
                     })}
@@ -360,6 +367,7 @@ const Form = () => {
                     type="number"
                     min="0"
                     step="1"
+                    maxLength="10"
                     onKeyDown={(e) => {
                       if (['e', 'E', '+', '-'].includes(e.key)) {
                         e.preventDefault();
@@ -370,9 +378,16 @@ const Form = () => {
 
                   <ItemInput
                     {...register(`items.${fields.length - 1}.title`, {
-                      onChange: () => clearErrors(`items.${fields.length - 1}.title`)
+                      onChange: (e) => {
+                        // 10 karakterden fazlasını engelle
+                        if (e.target.value.length > 10) {
+                          e.target.value = e.target.value.slice(0, 10);
+                        }
+                        clearErrors(`items.${fields.length - 1}.title`);
+                      }
                     })}
                     placeholder="Title"
+                    maxLength="10"
                     $flex={4}
                   />
                 </ItemRow>

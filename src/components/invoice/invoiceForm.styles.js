@@ -2,12 +2,10 @@ import styled, { keyframes } from 'styled-components';
 
 export const ContainerForm = styled.div`
   width: 100%;
-  min-height: 900px;
-  max-height: 900px;
+  height: auto;
   display: flex;
   align-items: flex-start;
   padding-right: 15px;
-  padding-left: 50px;
   margin-right: auto;
   margin-left: auto;
 
