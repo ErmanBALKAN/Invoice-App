@@ -2,7 +2,8 @@ import styled, { keyframes } from 'styled-components';
 
 export const ContainerForm = styled.div`
   width: 100%;
-  height: 90vh;
+  min-height: 900px;
+  max-height: 900px;
   display: flex;
   align-items: flex-start;
   padding-right: 15px;

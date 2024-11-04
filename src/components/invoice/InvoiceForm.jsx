@@ -309,8 +309,7 @@ const Form = () => {
                     <AmountInput
                       {...register(`items.${fields.length - 1}.amount`, {
                         onChange: (e) => {
-                          // Remove non-numeric characters except decimal point
-                          e.target.value = e.target.value.replace(/[eE+-]/, '');
+                          e.target.value = e.target.value.replace(/[eE+-]/gi, '');
                           clearErrors(`items.${fields.length - 1}.amount`);
                         }
                       })}
@@ -319,7 +318,7 @@ const Form = () => {
                       min="0"
                       step="0.01"
                       onKeyDown={(e) => {
-                        if (e.key === 'e' || e.key === '+' || e.key === '-') {
+                        if (['e', 'E', '+', '-'].includes(e.key)) {
                           e.preventDefault();
                         }
                       }}
@@ -353,8 +352,7 @@ const Form = () => {
                   <ItemInput
                     {...register(`items.${fields.length - 1}.quantity`, {
                       onChange: (e) => {
-                        // Remove non-numeric characters
-                        e.target.value = e.target.value.replace(/[eE+-]/, '');
+                        e.target.value = e.target.value.replace(/[eE+-]/gi, '');
                         clearErrors(`items.${fields.length - 1}.quantity`);
                       }
                     })}
@@ -363,7 +361,7 @@ const Form = () => {
                     min="0"
                     step="1"
                     onKeyDown={(e) => {
-                      if (e.key === 'e' || e.key === '+' || e.key === '-') {
+                      if (['e', 'E', '+', '-'].includes(e.key)) {
                         e.preventDefault();
                       }
                     }}
