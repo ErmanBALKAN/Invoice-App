@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import moment from "moment";
-import { useInvoice } from "../../../../context/InvoiceContext";
+import { useInvoice } from "../context/InvoiceContext";
 
 export const useDateHandling = () => {
   const { setInvoiceData } = useInvoice();

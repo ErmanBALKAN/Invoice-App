@@ -39,23 +39,24 @@ import {
   ItemDetails,
   ItemPricing,
   AddMoreButton,
-} from "./form.styles";
+} from "./invoiceForm.styles";
 import { useForm, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useDateHandling } from "./hooks/useDateHandling";
-import { CURRENCIES, VAT_OPTIONS, DUE_DATE_OPTIONS } from "../../../data/formConstants";
-import { useInvoice } from "../../../context/InvoiceContext";
+import { CURRENCIES, VAT_OPTIONS, DUE_DATE_OPTIONS } from "../../data/formConstants";
 import { CiCalendarDate } from "react-icons/ci";
 import { LuArchive } from "react-icons/lu";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import schema from "./validationSchema";
 import Swal from "sweetalert2";
+import { useDateHandling } from "../../hooks/useDateHandling";
+import { useInvoice } from "../../context/InvoiceContext";
+
 
 const Form = () => {
   const [isItemsVisible, setIsItemsVisible] = useState(true);
   const [showItemInputs, setShowItemInputs] = useState(false);
   const [isCustomVat, setIsCustomVat] = useState(false);
-  const { register, control, handleSubmit, watch, setValue, formState: { errors }, reset, trigger } = useForm({ resolver: yupResolver(schema),
+  const { register, control, handleSubmit, watch, setValue, formState: { errors }, reset, trigger, clearErrors } = useForm({ resolver: yupResolver(schema),
     defaultValues: {
       issueDate: moment().startOf("day").toDate(),
       dueDate: moment().startOf("day").add(15, "days").toDate(),
@@ -225,12 +226,18 @@ const Form = () => {
         <FormGroup>
         <ItemsContainer>  
           <Text $variant="label">Items</Text>
-          {fields.length > 0 && fields.slice(0, -1).map((item) => (
+          {fields.length > 0 && fields.slice(0, -1).map((item, index) => (
             <ItemSummary key={item.id}>
               <ItemSummaryContent>
                 <ItemSummaryHeader>
                   <span style={{display: "flex", alignItems: "center"}}>
-                    <ItemInitial>{item.title.slice(0,1)}</ItemInitial>
+                    <ItemInitial>
+                      {item.title.trim().includes(' ') 
+                        ? item.title.split(' ').length === 2 
+                          ? item.title.split(' ').map(word => word.charAt(0).toUpperCase()).join('')
+                          : item.title.charAt(0).toUpperCase()
+                        : item.title.charAt(0).toUpperCase()}
+                    </ItemInitial>
                     <ItemDetails>
                       <Text $variant="bold">{item.title}</Text>
                       <Text $variant="vat">{item.vatRate}% <span>&#8226; {item.vatRate === "0" ? "VAT Exempt" : item.vatRate === "10" ? "Reduced VAT" : item.vatRate === "20" ? "Standard VAT" : "Custom VAT"}</span> </Text>
@@ -246,10 +253,17 @@ const Form = () => {
                     </Text>
                   </ItemPricing>
                 </ItemSummaryHeader>
-                <AddMoreButton type="button" onClick={handleShowInputs}>
-                  <IoIosAddCircleOutline size={28} />
-                  Add more items
-                </AddMoreButton>
+                {index === fields.length - 2 && fields.length < 5 && (
+                  <AddMoreButton type="button" 
+                    onClick={handleShowInputs}
+                  >
+                    <IoIosAddCircleOutline size={28} />
+                    Add more items
+                  </AddMoreButton>
+                )}
+                <Text $variant="error">
+                  {fields.length >= 5 && item.id === fields[fields.length - 2].id && "For more items, please save the invoice"}
+                </Text>
               </ItemSummaryContent>
             </ItemSummary>
           ))}
@@ -257,7 +271,7 @@ const Form = () => {
           {isItemsVisible && (
             <ToggleSection
               onClick={handleToggleClick}
-              isOpen={isItemsVisible}
+              $isOpen={isItemsVisible}
             >
               <div>
                 <Text $variant="bold">Items</Text>
@@ -272,13 +286,19 @@ const Form = () => {
               <ItemInputGroup key={fields[fields.length - 1].id}>
                 <ItemHeader>
                   <h3>Item</h3>
-                  <button onClick={() => setIsItemsVisible(!isItemsVisible)}>
+                  <button 
+                    onClick={() => {
+                      setIsItemsVisible(!isItemsVisible)
+                      setShowItemInputs(!showItemInputs);
+                    }}
+                    disabled={fields.length >= 2}
+                  >
                     <LuArchive size={24} />
                   </button>
                 </ItemHeader>
 
                 <CombinedInputWrapper>
-                  <AmountInputContainer>
+                  <AmountInputContainer $flex={1}>
                     <CurrencySymbol>
                       {
                         CURRENCIES.find(
@@ -287,7 +307,9 @@ const Form = () => {
                       }
                     </CurrencySymbol>
                     <AmountInput
-                      {...register(`items.${fields.length - 1}.amount`)}
+                      {...register(`items.${fields.length - 1}.amount`, {
+                        onChange: () => clearErrors(`items.${fields.length - 1}.amount`)
+                      })}
                       placeholder="0"
                       type="number"
                       min="0"
@@ -319,17 +341,21 @@ const Form = () => {
                 )}
                 <ItemRow>
                   <ItemInput
-                    {...register(`items.${fields.length - 1}.quantity`)}
+                    {...register(`items.${fields.length - 1}.quantity`, {
+                      onChange: () => clearErrors(`items.${fields.length - 1}.quantity`)
+                    })}
                     placeholder="Quantity"
                     type="number"
                     min="0"
-                    flex={1}
+                    $flex={1}
                   />
 
                   <ItemInput
-                    {...register(`items.${fields.length - 1}.title`)}
+                    {...register(`items.${fields.length - 1}.title`, {
+                      onChange: () => clearErrors(`items.${fields.length - 1}.title`)
+                    })}
                     placeholder="Title"
-                    flex={4}
+                    $flex={4}
                   />
                 </ItemRow>
                 <ItemError>
@@ -355,6 +381,7 @@ const Form = () => {
                     onClick={(e) => {
                       e.preventDefault();
                       setValue(`items.${fields.length - 1}.vatRate`, rate.value);
+                      clearErrors(`items.${fields.length - 1}.vatRate`);
                       setIsCustomVat(rate.value === "custom");
                     }}
                   >

@@ -1,14 +1,13 @@
 import styled from "styled-components";
 
 export const ContainerPreview = styled.div`
-  max-width: 780px;
-  min-width: 650px;
-  max-height: 900px;
+  width: 650px;
+  height: 900px;
   background-color: white;
-  width: 100%;
   padding: 2rem;
   border: 20px solid #E8E9ED;
   border-radius: 40px;
+  position: relative;
 `;
 
 export const Header = styled.div`
@@ -76,7 +75,7 @@ export const CompanyInfo = styled.div`
 `;
 
 export const Table = styled.table`
-  width: 100%;
+  width: 650px;
   border-collapse: collapse;
   margin: 2rem 0;
 
@@ -121,7 +120,7 @@ export const TableDescription = styled.td`
 export const TotalSection = styled.div`
   margin-left: auto;
   width: 270px;
-  margin-bottom: 10rem;
+  margin-top: 1rem;
 `;
 
 export const TotalItem = styled.p`
@@ -150,7 +149,7 @@ export const PaymentSection = styled.div`
   border-radius: 10px;
   color: #888A90;
   div {
-    width: 50%;
+    width: 100%;
     &:last-child {
       padding-left: 2rem;
       width: 100%;
@@ -180,7 +179,6 @@ export const PaymentSection = styled.div`
   > div:first-child {
     padding-right: 2rem;
     border-right: 1px solid #DDD;
-    height: 80%;
   }
 
   > div:last-child p {
@@ -192,8 +190,8 @@ export const Footer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 2rem;
   padding-top: 1rem;
+  width: 620px;
   p {
     font-size: 14px;
   color: #666;
@@ -234,10 +232,16 @@ export const TaxId = styled.p`
 export const ContactInfo = styled.p`
   color: #666;
   font-size: 13px;
-  margin-bottom: 4px;
 `;
 
 export const DueAmount = styled(CompanyName)`
   font-size: 1.1rem;
   font-weight: 700;
 `;
+
+export const InvoiceFooter = styled.div`
+  position: absolute;
+  bottom: 15px;
+  width: 650px;
+`;
+

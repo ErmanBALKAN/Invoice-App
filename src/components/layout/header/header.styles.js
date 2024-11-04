@@ -2,13 +2,14 @@ import styled from "styled-components";
 
 export const HeaderContainer = styled.header`
   width: 100%;
-  height: 60px;
+  height: 70px;
   background-color: #ffffff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: fixed;
   top: 0;
   left: 0;
   z-index: 100;
+  margin-left: 20px;
 `;
 
 export const HeaderContent = styled.div`

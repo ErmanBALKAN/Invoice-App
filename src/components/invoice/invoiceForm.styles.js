@@ -2,7 +2,7 @@ import styled, { keyframes } from 'styled-components';
 
 export const ContainerForm = styled.div`
   width: 100%;
-  height: 100vh;
+  height: 90vh;
   display: flex;
   align-items: flex-start;
   padding-right: 15px;
@@ -17,10 +17,10 @@ export const ContainerForm = styled.div`
   @media (min-width: 992px) {
     width: 970px;
   }
-
-  @media (min-width: 1200px) {
-    width: 1170px;
+  @media (max-width: 1400px) {
+    justify-content: center;
   }
+
 `;
 
 export const FormWrapper = styled.form`
@@ -233,7 +233,7 @@ export const CombinedInputWrapper = styled.div`
 
 export const AmountInputContainer = styled.div`
   position: relative;
-  flex: 1;
+  flex: ${props => props.$flex || 1};
   display: flex;
   align-items: center;
 `;
@@ -331,7 +331,7 @@ export const ItemError = styled.div`
 export const ItemInput = styled.input`
   padding: 8px 12px;
   border-radius: 8px;
-  flex: ${(props) => props.flex || 1};
+  flex: ${props => props.$flex || 1};
   text-align: start;
   font-weight: 600;
   border: none;
@@ -403,6 +403,7 @@ export const ToggleSection = styled.div`
     padding: 10px;
     border-radius: 50%;
   }
+  ${props => props.$isOpen ? 'your-open-styles' : 'your-closed-styles'}
 `;
 
 export const ItemsContainer = styled.div`
@@ -419,6 +420,7 @@ export const AddButton = styled.button`
   cursor: pointer;
   font-weight: 600;
   margin-top: 15px;
+  margin-bottom: 15px;
 `;
 
 export const ItemSummary = styled.div`

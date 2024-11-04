@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ClosedSideBar, OpenSideBar } from "./sidebar.styles";
+import { ClosedSideBar, OpenSideBar, FooterDiv, FooterDivOpen } from "./sidebar.styles";
 import { TbInvoice } from "react-icons/tb";
 
 export function SideBar() {
@@ -27,6 +27,9 @@ export function SideBar() {
                 </a>
               </ul>
             </nav>
+            <FooterDiv>
+              <span>AE</span>
+            </FooterDiv>
           </ClosedSideBar>
         ) : (
           <OpenSideBar>
@@ -47,6 +50,9 @@ export function SideBar() {
                   </a>
                 </ul>
               </nav>
+            <FooterDivOpen>
+              <span>Avery Ellis</span>
+            </FooterDivOpen>
             </section>
             <aside onClick={handleChangeSideBar} />
           </OpenSideBar>

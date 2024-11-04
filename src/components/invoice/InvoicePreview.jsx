@@ -1,7 +1,6 @@
 import React from "react";
-import invoiceIssuer from "../../../data/invoiceIssuer";
-import invoiceRecipient from "../../../data/invoiceRecipient";
-import { useInvoice } from "../../../context/InvoiceContext";
+import invoiceIssuer from "../../data/invoiceIssuer";
+import invoiceRecipient from "../../data/invoiceRecipient";
 import {
   ContainerPreview,
   Header,
@@ -23,9 +22,11 @@ import {
   TaxId,
   ContactInfo,
   DueAmount,
-} from "./preview.styles";
+  InvoiceFooter
+} from "./invoicePreview.styles";
 import moment from 'moment';
-import { CURRENCIES } from "../../../data/formConstants";
+import { CURRENCIES } from "../../data/formConstants";
+import { useInvoice } from "../../context/InvoiceContext";
 
 const Preview = () => {
   const { invoiceData } = useInvoice();
@@ -151,8 +152,9 @@ const Preview = () => {
           Total incl. VAT<strong>{currencySymbol}{calculations.totalInclVat.toFixed(2)}</strong>
         </TotalItem>
       </TotalSection>
-      <DueAmount>
-        {currencySymbol}{calculations.totalInclVat.toFixed(2)} due {moment(dueDate).format('DD MMMM, YYYY')}
+      <InvoiceFooter>
+        <DueAmount>
+          {currencySymbol}{calculations.totalInclVat.toFixed(2)} due {moment(dueDate).format('DD MMMM, YYYY')}
       </DueAmount>
       <PaymentSection>
         <div>
@@ -189,7 +191,8 @@ const Preview = () => {
           <img src="/assest/icons/logo/footerLogo.PNG" alt="Logo" />
         </FooterLogo>
         <p>1/1</p>
-      </Footer>
+        </Footer>
+      </InvoiceFooter>
     </ContainerPreview>
   );
 };

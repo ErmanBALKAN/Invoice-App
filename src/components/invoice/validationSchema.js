@@ -1,5 +1,5 @@
 import * as yup from "yup";
-import { VAT_OPTIONS } from "../../../data/formConstants";
+import { VAT_OPTIONS } from "../../data/formConstants";
 
 const schema = yup.object().shape({
     issueDate: yup.date().required("Issue date is required"),

@@ -12,7 +12,7 @@ const appearFromRight = keyframes`
 `;
 
 export const ClosedSideBar = styled.header`
-  max-width: 50px;
+  max-width: 70px;
   width: 100%;
   height: 100%;
   border-right: 2px solid #eaebef;
@@ -49,9 +49,10 @@ export const ClosedSideBar = styled.header`
       flex-direction: column;
 
       a {
-        width: 36px;
-        height: 36px;
-        border-radius: 10px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-top: 5px;
 
         display: flex;
         align-items: center;
@@ -63,6 +64,8 @@ export const ClosedSideBar = styled.header`
           background: #f1ebff;
           
           svg {
+            width: 30px;
+            height: 30px;
             path {
               color: #803bfe;
             }
@@ -79,8 +82,8 @@ export const ClosedSideBar = styled.header`
           }
         }
         svg {
-          width: 24px;
-          height: 24px;
+          width: 30px;
+          height: 30px;
           path {
             color: #803bfe;
           }
@@ -99,6 +102,7 @@ export const OpenSideBar = styled.header`
   z-index: 100;
   background: var(--shadow-black-color);
 
+
   display: flex;
   align-items: center;
 
@@ -107,6 +111,7 @@ export const OpenSideBar = styled.header`
     align-items: flex-start;
     flex-direction: column;
     justify-content: space-between;
+    border-right: 2px solid #eaebef;
 
     max-width: 240px;
     height: 100%;
@@ -152,8 +157,8 @@ export const OpenSideBar = styled.header`
           }
 
           svg {
-            width: 24px;
-            height: 24px;
+            width: 30px;
+            height: 30px;
             path {
               color: #803bfe;
             }
@@ -186,4 +191,25 @@ export const OpenSideBar = styled.header`
     width: 100%;
     height: 100%;
   }
+`;
+
+export const FooterDiv = styled.div`
+  background-color: #E8E9ED;
+  padding: 12px;
+  text-align: center;
+  margin-top: auto;
+  border-radius: 50%;
+  margin-bottom: 30px;
+  
+  span {
+    color: #4E5056;
+    font-size: 14px;
+    font-weight: 600;
+  }
+`;
+
+export const FooterDivOpen = styled(FooterDiv)`
+  margin-bottom: 30px;
+  margin-left: 20px;
+  padding: 15px 20px;
 `;
