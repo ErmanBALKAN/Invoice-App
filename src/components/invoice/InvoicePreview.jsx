@@ -28,7 +28,7 @@ import moment from 'moment';
 import { CURRENCIES } from "../../data/formConstants";
 import { useInvoice } from "../../context/InvoiceContext";
 
-const Preview = () => {
+const InvoicePreview = () => {
   const { invoiceData } = useInvoice();
   const { issueDate, dueDate, items } = invoiceData;
   const {
@@ -197,4 +197,4 @@ const Preview = () => {
   );
 };
 
-export default Preview;
+export default InvoicePreview;

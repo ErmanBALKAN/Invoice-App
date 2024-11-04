@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import DatePicker from "react-datepicker";
 import moment from "moment";
 import "react-datepicker/dist/react-datepicker.css";
@@ -50,12 +50,13 @@ import schema from "./validationSchema";
 import Swal from "sweetalert2";
 import { useDateHandling } from "../../hooks/useDateHandling";
 import { useInvoice } from "../../context/InvoiceContext";
+import { useInputHandling } from "../../hooks/useInputHandling";
+import { useItemHandling } from "../../hooks/useItemHandling";
 
 
-const Form = () => {
-  const [isItemsVisible, setIsItemsVisible] = useState(true);
-  const [showItemInputs, setShowItemInputs] = useState(false);
-  const [isCustomVat, setIsCustomVat] = useState(false);
+
+const InvoiceForm = () => {
+  const { isCustomVat, getVatLabel, handleVatChange, handleInputChange } = useInputHandling();
   const { register, control, handleSubmit, watch, setValue, formState: { errors }, reset, trigger, clearErrors } = useForm({ resolver: yupResolver(schema),
     defaultValues: {
       issueDate: moment().startOf("day").toDate(),
@@ -77,22 +78,12 @@ const Form = () => {
     name: "items",
   });
 
-  const {
-    issueDate,
-    setIssueDate,
-    isOpen,
-    setIsOpen,
-    dueDate,
-    dueDateOption,
-    isDueDatePickerOpen,
-    setIsDueDatePickerOpen,
-    getDateDisplay,
-    handleIconClick,
-    handleDueDateOption,
-    handleCustomDateChange,
-  } = useDateHandling();
+  const {issueDate, setIssueDate, isOpen, setIsOpen, dueDate, dueDateOption, isDueDatePickerOpen, setIsDueDatePickerOpen, getDateDisplay, handleIconClick, handleDueDateOption, handleCustomDateChange} = useDateHandling();
 
   const { setInvoiceData } = useInvoice();
+
+  const { isItemsVisible, setIsItemsVisible, showItemInputs, setShowItemInputs, getItemInitials, getCurrencySymbol, handleAddItem, handleShowInputs, handleToggleClick, calculateItemTotal } = useItemHandling(fields, watch, setValue, clearErrors, trigger, append);
+
 
   useEffect(() => {
     const subscription = watch((formData) => {
@@ -122,36 +113,6 @@ const Form = () => {
       reset();
       setIsItemsVisible(true)
     });
-  };
-
-  const handleAddItem = async () => {
-    const isValid = await trigger(`items.${fields.length - 1}`);
-    if (isValid) {
-      append({
-        amount: 1,
-        currency: "EUR",
-        quantity: 1,
-        title: 1,
-        vatRate: 10,
-      });
-      setShowItemInputs(false);
-    }
-  };
-
-  const handleShowInputs = () => {
-    setValue(`items.${fields.length - 1}`, {
-      amount: undefined,
-      currency: "EUR",
-      quantity: undefined,
-      title: "",
-      vatRate: "",
-    });
-    setShowItemInputs(true);
-  };
-
-  const handleToggleClick = () => {
-    setIsItemsVisible(false);
-    setShowItemInputs(true);
   };
 
   return (
@@ -232,24 +193,22 @@ const Form = () => {
                 <ItemSummaryHeader>
                   <span style={{display: "flex", alignItems: "center"}}>
                     <ItemInitial>
-                      {item.title.trim().includes(' ') 
-                        ? item.title.split(' ').length === 2 
-                          ? item.title.split(' ').map(word => word.charAt(0).toUpperCase()).join('')
-                          : item.title.charAt(0).toUpperCase()
-                        : item.title.charAt(0).toUpperCase()}
+                      {getItemInitials(item.title)}
                     </ItemInitial>
                     <ItemDetails>
                       <Text $variant="bold">{item.title}</Text>
-                      <Text $variant="vat">{item.vatRate}% <span>&#8226; {item.vatRate === "0" ? "VAT Exempt" : item.vatRate === "10" ? "Reduced VAT" : item.vatRate === "20" ? "Standard VAT" : "Custom VAT"}</span> </Text>
+                      <Text $variant="vat">
+                        {item.vatRate}% <span>&#8226; {getVatLabel(item.vatRate)}</span>
+                      </Text>
                     </ItemDetails>
                   </span>
                   <ItemPricing>
                     <Text $variant="bold">
-                      {CURRENCIES.find(c => c.code === item.currency)?.symbol}
-                      {(item.amount * item.quantity * (1 + item.vatRate / 100)).toFixed(2)}
+                      {getCurrencySymbol(item.currency)}
+                      {calculateItemTotal(item)}
                     </Text>
                     <Text $variant="light">
-                      {item.quantity} x {CURRENCIES.find(c => c.code === item.currency)?.symbol}{item.amount}
+                      {item.quantity} x {getCurrencySymbol(item.currency)}{item.amount}
                     </Text>
                   </ItemPricing>
                 </ItemSummaryHeader>
@@ -308,19 +267,13 @@ const Form = () => {
                     </CurrencySymbol>
                     <AmountInput
                       {...register(`items.${fields.length - 1}.amount`, {
-                        onChange: (e) => {
-                          e.target.value = e.target.value.replace(/[eE+-]/gi, '');
-                          if (e.target.value.length > 10) {
-                            e.target.value = e.target.value.slice(0, 10);
-                          }
-                          clearErrors(`items.${fields.length - 1}.amount`);
-                        }
+                        onChange: (e) => handleInputChange(e, 'amount', setValue, clearErrors, fields.length - 1, 9)
                       })}
                       placeholder="0"
                       type="number"
                       min="0"
                       step="0.01"
-                      maxLength="10"
+                      maxLength={10}
                       onKeyDown={(e) => {
                         if (['e', 'E', '+', '-'].includes(e.key)) {
                           e.preventDefault();
@@ -355,13 +308,7 @@ const Form = () => {
                 <ItemRow>
                   <ItemInput
                     {...register(`items.${fields.length - 1}.quantity`, {
-                      onChange: (e) => {
-                        e.target.value = e.target.value.replace(/[eE+-]/gi, '');
-                        if (e.target.value.length > 4) {
-                          e.target.value = e.target.value.slice(0, 4);
-                        }
-                        clearErrors(`items.${fields.length - 1}.quantity`);
-                      }
+                      onChange: (e) => handleInputChange(e, 'quantity', setValue, clearErrors, fields.length - 1, 4)
                     })}
                     placeholder="Quantity"
                     type="number"
@@ -379,9 +326,8 @@ const Form = () => {
                   <ItemInput
                     {...register(`items.${fields.length - 1}.title`, {
                       onChange: (e) => {
-                        // 10 karakterden fazlasını engelle
-                        if (e.target.value.length > 10) {
-                          e.target.value = e.target.value.slice(0, 10);
+                        if (e.target.value.length > 20) {
+                          e.target.value = e.target.value.slice(0, 20);
                         }
                         clearErrors(`items.${fields.length - 1}.title`);
                       }
@@ -413,9 +359,7 @@ const Form = () => {
                     selected={watch(`items.${fields.length - 1}.vatRate`) === rate.value}
                     onClick={(e) => {
                       e.preventDefault();
-                      setValue(`items.${fields.length - 1}.vatRate`, rate.value);
-                      clearErrors(`items.${fields.length - 1}.vatRate`);
-                      setIsCustomVat(rate.value === "custom");
+                      handleVatChange(setValue, clearErrors, fields.length - 1, rate.value);
                     }}
                   >
                     {rate.value === "custom" ? (
@@ -461,4 +405,4 @@ const Form = () => {
   );
 };
 
-export default Form;
+export default InvoiceForm;

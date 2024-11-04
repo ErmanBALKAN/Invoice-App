@@ -354,7 +354,7 @@ export const ItemInput = styled.input`
 
   &::placeholder {
     color: #666;
-    font-size: 14px; /* Reduced placeholder font size */
+    font-size: 14px; 
   }
 `;
 
