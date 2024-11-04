@@ -308,11 +308,21 @@ const Form = () => {
                     </CurrencySymbol>
                     <AmountInput
                       {...register(`items.${fields.length - 1}.amount`, {
-                        onChange: () => clearErrors(`items.${fields.length - 1}.amount`)
+                        onChange: (e) => {
+                          // Remove non-numeric characters except decimal point
+                          e.target.value = e.target.value.replace(/[eE+-]/, '');
+                          clearErrors(`items.${fields.length - 1}.amount`);
+                        }
                       })}
                       placeholder="0"
                       type="number"
                       min="0"
+                      step="0.01"
+                      onKeyDown={(e) => {
+                        if (e.key === 'e' || e.key === '+' || e.key === '-') {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                   </AmountInputContainer>
 
@@ -342,11 +352,21 @@ const Form = () => {
                 <ItemRow>
                   <ItemInput
                     {...register(`items.${fields.length - 1}.quantity`, {
-                      onChange: () => clearErrors(`items.${fields.length - 1}.quantity`)
+                      onChange: (e) => {
+                        // Remove non-numeric characters
+                        e.target.value = e.target.value.replace(/[eE+-]/, '');
+                        clearErrors(`items.${fields.length - 1}.quantity`);
+                      }
                     })}
                     placeholder="Quantity"
                     type="number"
                     min="0"
+                    step="1"
+                    onKeyDown={(e) => {
+                      if (e.key === 'e' || e.key === '+' || e.key === '-') {
+                        e.preventDefault();
+                      }
+                    }}
                     $flex={1}
                   />
 
