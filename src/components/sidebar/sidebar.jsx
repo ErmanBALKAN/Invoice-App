@@ -4,6 +4,7 @@ import { TbInvoice } from "react-icons/tb";
 
 export function SideBar() {
   const [sideBar, setSideBar] = useState(false);
+  const isHomePage = window.location.pathname === '/';
 
   function handleChangeSideBar() {
     setSideBar((prevState) => !prevState);
@@ -17,7 +18,11 @@ export function SideBar() {
                 <img src="/assest/icons/logo/logo.png" alt="Logo" />
               </button>
               <ul>
-                <a href="/" title="Invoice">
+                <a 
+                  href="/" 
+                  title="Invoice"
+                  className={isHomePage ? 'active' : ''}
+                >
                   <TbInvoice />
                 </a>
               </ul>
@@ -33,7 +38,11 @@ export function SideBar() {
                   </button>
                 </span>
                 <ul>
-                  <a href="/" title="Invoice">
+                  <a 
+                    href="/" 
+                    title="Invoice"
+                    className={isHomePage ? 'active' : ''}
+                  >
                     <TbInvoice /> Invoice
                   </a>
                 </ul>

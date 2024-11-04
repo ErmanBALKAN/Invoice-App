@@ -6,7 +6,7 @@ export const ContainerForm = styled.div`
   display: flex;
   align-items: flex-start;
   padding-right: 15px;
-  padding-left: 70px;
+  padding-left: 50px;
   margin-right: auto;
   margin-left: auto;
 
@@ -20,9 +20,6 @@ export const ContainerForm = styled.div`
 
   @media (min-width: 1200px) {
     width: 1170px;
-  }
-  @media (max-width: 1024px) {
-    padding-left: 100px;
   }
 `;
 

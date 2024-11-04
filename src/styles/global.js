@@ -37,6 +37,6 @@ export const GlobalStyle = createGlobalStyle`
     height: 100vh;
     position: relative;
 
-    background: #f3f3f3;
+    background: #F4F5F8;
   }
 `;

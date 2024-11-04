@@ -59,8 +59,18 @@ export const ClosedSideBar = styled.header`
 
         transition: background 0.3s;
 
-        &:hover {
+        &.active {
           background: #f1ebff;
+          
+          svg {
+            path {
+              color: #803bfe;
+            }
+          }
+        }
+
+        &:hover {
+          background: #e4d6ff;
 
           svg {
             path {
@@ -154,6 +164,16 @@ export const OpenSideBar = styled.header`
                 path {
                   color: #803bfe;
                 }
+              }
+            }
+          }
+
+          &.active {
+            background: #f1ebff;
+            
+            svg {
+              path {
+                color: #803bfe;
               }
             }
           }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import moment from "moment";
 import "react-datepicker/dist/react-datepicker.css";
@@ -93,7 +93,7 @@ const Form = () => {
 
   const { setInvoiceData } = useInvoice();
 
-  React.useEffect(() => {
+  useEffect(() => {
     const subscription = watch((formData) => {
       setInvoiceData({
         issueDate: issueDate,
@@ -106,7 +106,12 @@ const Form = () => {
   }, [watch, setInvoiceData, issueDate]);
 
   const onSubmit = (data) => {
-    console.log(data);
+    const submissionData = {
+      ...data,
+      items: data.items.slice(data.items.length, -1)
+    };
+    
+    console.log(submissionData);
     Swal.fire({
       title: 'Invoice Created!',
       text: `Your invoice has been created.`,
@@ -114,6 +119,7 @@ const Form = () => {
       confirmButtonText: 'OK'
     }).then(() => {
       reset();
+      setIsItemsVisible(true)
     });
   };
 
@@ -121,17 +127,24 @@ const Form = () => {
     const isValid = await trigger(`items.${fields.length - 1}`);
     if (isValid) {
       append({
-        amount: "",
+        amount: 1,
         currency: "EUR",
-        quantity: "",
-        title: "",
-        vatRate: "",
+        quantity: 1,
+        title: 1,
+        vatRate: 10,
       });
       setShowItemInputs(false);
     }
   };
 
   const handleShowInputs = () => {
+    setValue(`items.${fields.length - 1}`, {
+      amount: undefined,
+      currency: "EUR",
+      quantity: undefined,
+      title: "",
+      vatRate: "",
+    });
     setShowItemInputs(true);
   };
 
@@ -233,7 +246,7 @@ const Form = () => {
                     </Text>
                   </ItemPricing>
                 </ItemSummaryHeader>
-                <AddMoreButton onClick={handleShowInputs}>
+                <AddMoreButton type="button" onClick={handleShowInputs}>
                   <IoIosAddCircleOutline size={28} />
                   Add more items
                 </AddMoreButton>

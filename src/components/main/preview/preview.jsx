@@ -52,9 +52,13 @@ const Preview = () => {
     : '€';
 
   const calculations = items.reduce((acc, item) => {
-    const subtotal = item.quantity * item.amount;
-    const vatAmount = subtotal * (item.vatRate / 100);
+    const quantity = Number(item?.quantity) || 0;
+    const amount = Number(item?.amount) || 0;
+    const vatRate = Number(item?.vatRate) || 0;
     
+    const subtotal = quantity * amount;
+    const vatAmount = subtotal * (vatRate / 100);
+
     return {
       totalExclVat: acc.totalExclVat + subtotal,
       totalVatAmount: acc.totalVatAmount + vatAmount,
@@ -115,13 +119,19 @@ const Preview = () => {
         </thead>
         <tbody>
           {items.map((item, index) => {
+            const quantity = Number(item?.quantity) || 0;
+            const amount = Number(item?.amount) || 0;
+            const vatRate = Number(item?.vatRate) || 0;
+            
+            const total = (quantity * amount) * (1 + vatRate / 100);
+
             return (
               <tr key={index}>
                 <TableDescription>{item.title}</TableDescription>
-                <td>{item.quantity}</td>
-                <td>{currencySymbol}{item.amount}</td>
-                <td>{item.vatRate}%</td>
-                <td>{currencySymbol}{((item.quantity * item.amount) * (1 + item.vatRate / 100)).toFixed(2)}</td>
+                <td>{quantity}</td>
+                <td>{currencySymbol}{amount}</td>
+                <td>{vatRate}%</td>
+                <td>{currencySymbol}{total.toFixed(2)}</td>
               </tr>
             );
           })}

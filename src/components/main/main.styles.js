@@ -8,9 +8,14 @@ export const Container = styled.div`
   margin-top: 80px;
   display: flex;
   max-width: 1600px;
+  &.main-container {
+    display: flex;
+    justify-content: center;
+    align-items:center;
+  }
 
   @media (max-width: 1024px) {
-    width: 100%;
+    width: calc(100% - 70px);
     margin-left: 0;
     padding: 20px;
     flex-direction: column;
@@ -20,4 +25,10 @@ export const Container = styled.div`
   @media (max-width: 480px) {
     padding: 10px;
   }
+`;
+
+export const InvoiceContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items:center;
 `;

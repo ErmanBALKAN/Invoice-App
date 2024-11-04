@@ -1,11 +1,11 @@
 import styled from "styled-components";
 
 export const ContainerPreview = styled.div`
-  max-width: 815px;
-  min-width: 730px;
+  max-width: 780px;
+  min-width: 650px;
+  max-height: 900px;
   background-color: white;
   width: 100%;
-  height: 80%;
   padding: 2rem;
   border: 20px solid #E8E9ED;
   border-radius: 40px;
