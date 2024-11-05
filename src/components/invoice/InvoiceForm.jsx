@@ -327,13 +327,13 @@ const InvoiceForm = () => {
                     {...register(`items.${fields.length - 1}.title`, {
                       onChange: (e) => {
                         if (e.target.value.length > 20) {
-                          e.target.value = e.target.value.slice(0, 20);
+                          e.target.value = e.target.value.slice(0, 19);
                         }
                         clearErrors(`items.${fields.length - 1}.title`);
                       }
                     })}
                     placeholder="Title"
-                    maxLength="10"
+                    maxLength="20"
                     $flex={4}
                   />
                 </ItemRow>

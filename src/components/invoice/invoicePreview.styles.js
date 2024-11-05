@@ -115,6 +115,8 @@ export const Table = styled.table`
 
 export const TableDescription = styled.td`
   width: 40%;
+  font-weight: 800;
+  color: #333;
 `;
 
 export const TotalSection = styled.div`
