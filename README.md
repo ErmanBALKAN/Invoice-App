@@ -24,4 +24,12 @@ You can view the live project here: [Wamo Invoice Form](https://wamo-invoice.ver
 - **react-router-dom**: Manages routing between pages within the application.
 - **Vercel**: Deployment platform for hosting the application.
 
+## Usage
 
+- Fill out the form fields in the input section.
+- See the preview update in real time based on your inputs.
+- Submit the form to trigger any validation feedback or alerts as needed.
+
+## License
+
+This project is for educational and demonstration purposes only.
